@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Nuestra Historia de Amor ❤️ - Álbum Digital Premium</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Caveat:wght@600;700&family=Cinzel:wght@600;700&family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      --gold-primary: #dfb368;
+      --gold-light: #f7e1ad;
+      --rose-deep: #80132a;
+      --rose-pink: #e63956;
+      --satin-bg: #11050a;
+      --paper-cream: #faf6ee;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--satin-bg);
+      background-image: 
+        radial-gradient(circle at 50% 20%, rgba(180, 30, 70, 0.35) 0%, transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(120, 20, 50, 0.4) 0%, transparent 70%);
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    /* PARTICULAS CANVAS */
+    #particles-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* CONTENEDOR ÁLBUM 3D */
+    .book-stage {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 1020px;
+      perspective: 2000px;
+    }
+
+    .book-wrapper {
+      position: relative;
+      width: 100%;
+      min-height: 640px;
+      background: #0f0508;
+      border-radius: 20px;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.95), 0 0 50px rgba(223, 179, 104, 0.15);
+      border: 3px solid rgba(223, 179, 104, 0.4);
+      display: flex;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    /* LISTÓN / SOLAPA DE APERTURA */
+    .cover-ribbon {
+      position: absolute;
+      top: 50%;
+      right: -24px;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 140px;
+      background: linear-gradient(135deg, #e63956, #80132a);
+      border-radius: 0 16px 16px 0;
+      box-shadow: 4px 6px 15px rgba(0, 0, 0, 0.6), inset 1px 1px 2px rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.3s;
+      border: 1px solid rgba(247, 225, 173, 0.5);
+    }
+
+    .cover-ribbon:hover {
+      right: -28px;
+      filter: brightness(1.15);
+    }
+
+    .cover-ribbon-text {
+      writing-mode: vertical-rl;
+      text-transform: uppercase;
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      color: #f7e1ad;
+      font-weight: 700;
+    }
+
+    /* PORTADA DE PASTA DURA 3D */
+    .book-cover {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #1c060d 0%, #3a0818 50%, #17040a 100%);
+      border-radius: 20px;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      transform-origin: left center;
+      transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+      box-shadow: inset 0 0 100px rgba(0,0,0,0.8), 10px 0 30px rgba(0,0,0,0.7);
+      border: 2px solid rgba(223, 179, 104, 0.3);
+      overflow: hidden;
+    }
+
+    .book-cover.opened {
+      transform: rotateY(-140deg);
+      pointer-events: none;
+    }
+
+    .cover-border-frame {
+      position: absolute;
+      inset: 16px;
+      border: 2px dashed rgba(223, 179, 104, 0.4);
+      border-radius: 14px;
+      pointer-events: none;
+    }
+
+    /* ESPIRAL DE LOMERA */
+    .album-spine {
+      width: 42px;
+      background: linear-gradient(90deg, #090204, #1f0710, #090204);
+      border-right: 2px solid rgba(223, 179, 104, 0.3);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      padding: 20px 0;
+      z-index: 35;
+      flex-shrink: 0;
+    }
+
+    .spine-ring {
+      width: 32px;
+      height: 14px;
+      background: linear-gradient(180deg, #f7e1ad 0%, #a87d32 50%, #422d08 100%);
+      border-radius: 8px;
+      box-shadow: 2px 4px 8px rgba(0,0,0,0.8);
+    }
+
+    /* CONTENIDO DE HOJA / PÁGINAS */
+    .album-pages-area {
+      flex: 1;
+      position: relative;
+      background: #14070c;
+      background-image: radial-gradient(rgba(223, 179, 104, 0.08) 1px, transparent 1px);
+      background-size: 16px 16px;
+      border-radius: 0 20px 20px 0;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    /* PESTAÑAS DERECHAS */
+    .side-tabs {
+      position: absolute;
+      right: -36px;
+      top: 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 30;
+    }
+
+    .tab-btn {
+      width: 38px;
+      height: 60px;
+      background: linear-gradient(135deg, #2b0b14, #42101e);
+      border: 1px solid rgba(223, 179, 104, 0.4);
+      border-radius: 0 10px 10px 0;
+      color: var(--gold-light);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 3px 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .tab-btn.active, .tab-btn:hover {
+      background: linear-gradient(135deg, #80132a, #e63956);
+      width: 44px;
+      color: #fff;
+    }
+
+    /* PÁGINAS INTERNAS (FLIPBOOK EFFECT) */
+    .scrapbook-page {
+      display: none;
+      width: 100%;
+      height: 100%;
+      min-height: 520px;
+      animation: pageTurn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      transform-origin: left center;
+    }
+
+    .scrapbook-page.active {
+      display: block;
+    }
+
+    @keyframes pageTurn {
+      0% { opacity: 0; transform: rotateY(-20deg) scale(0.96); }
+      100% { opacity: 1; transform: rotateY(0deg) scale(1); }
+    }
+
+    /* ELEMENTOS SCRAPBOOK (CINTAS, SELLOS, NOTAS) */
+    .washi-tape {
+      position: absolute;
+      height: 24px;
+      background: rgba(247, 225, 173, 0.65);
+      border-left: 4px dashed rgba(0,0,0,0.15);
+      border-right: 4px dashed rgba(0,0,0,0.15);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+      z-index: 15;
+      transform: rotate(var(--rot, -3deg));
+    }
+
+    .wax-seal {
+      position: absolute;
+      width: 46px;
+      height: 46px;
+      background: radial-gradient(circle at 30% 30%, #e63956, #600b1d);
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 0 6px rgba(255,255,255,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-light);
+      font-family: 'Cinzel', serif;
+      font-weight: bold;
+      font-size: 1.1rem;
+      z-index: 20;
+    }
+
+    .polaroid-card {
+      background: #faf6ee;
+      padding: 12px 12px 28px 12px;
+      border-radius: 3px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+      transform: rotate(var(--rot, -2deg));
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .polaroid-card:hover {
+      transform: scale(1.05) rotate(0deg) !important;
+      z-index: 25;
+      box-shadow: 0 20px 40px rgba(230, 57, 86, 0.3);
+    }
+
+    .polaroid-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      border-radius: 2px;
+      background: #222;
+    }
+
+    .polaroid-caption {
+      font-family: 'Caveat', cursive;
+      color: #1a080e;
+      font-size: 1.35rem;
+      text-align: center;
+      margin-top: 10px;
+      font-weight: 700;
+    }
+
+    /* REPRODUCTOR CASSETTE / CÁMARA VINTAGE */
+    .cassette-box {
+      background: linear-gradient(135deg, #2a1018, #18060c);
+      border: 2px solid rgba(223, 179, 104, 0.4);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+    }
+
+    .cassette-wheel {
+      width: 40px;
+      height: 40px;
+      border: 4px dashed #dfb368;
+      border-radius: 50%;
+      animation: spin 4s linear infinite;
+    }
+
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    /* CORAZÓN MULTILINGÜE */
+    .heart-cloud {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .lang-heart-node {
+      position: absolute;
+      color: rgba(255, 230, 240, 0.88);
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+      padding: 1px 4px;
+      border-radius: 3px;
+      white-space: nowrap;
+      transform: translate(-50%, -50%);
+      font-weight: 600;
+    }
+
+    .lang-heart-node:hover, .lang-heart-node.selected {
+      color: #fff;
+      background: rgba(230, 57, 86, 0.95);
+      transform: translate(-50%, -50%) scale(1.3) !important;
+      z-index: 40;
+      box-shadow: 0 0 12px #e63956, 0 0 20px rgba(255, 255, 255, 0.6);
+      border-radius: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .heart-cloud {
+        height: 300px;
+      }
+      .lang-heart-node {
+        font-size: 0.58rem;
+        padding: 0px 2px;
+      }
+    }
+
+    /* GLASS CARD */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(223, 179, 104, 0.2);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    /* CARTA DE AMOR PERGAMINO */
+    .parchment-paper {
+      background: #fdfaf3;
+      background-image: radial-gradient(#e0d7c5 1px, transparent 1px);
+      background-size: 12px 12px;
+      color: #2b1219;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      padding: 24px;
+      border-radius: 6px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    /* CONTROLES AUDIO & PARTICULAS */
+    .floating-tools {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 100;
+    }
+
+    .tool-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(28, 6, 13, 0.85);
+      border: 1px solid rgba(223, 179, 104, 0.5);
+      color: var(--gold-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.6);
+      transition: all 0.3s;
+    }
+
+    .tool-btn:hover {
+      transform: scale(1.1);
+      background: var(--rose-pink);
+      color: #fff;
+    }
+
+    /* MODAL SCRAPBOOK */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 2, 5, 0.92);
+      backdrop-filter: blur(10px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      padding: 20px;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    @media (max-width: 768px) {
+      .book-wrapper {
+        min-height: 680px;
+      }
+      .album-pages-area {
+        padding: 16px;
+      }
+      .side-tabs {
+        right: -28px;
+        top: 40px;
+      }
+      .tab-btn {
+        width: 30px;
+        height: 50px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CANAL DE PARTICULAS Y DESTELLOS -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- HERRAMIENTAS FLOTANTES -->
+  <div class="floating-tools">
+    <button class="tool-btn" onclick="toggleParticles()" title="Pausar/Activar Partículas">✨</button>
+    <button class="tool-btn" onclick="toggleAudio()" title="Música de Fondo">🎵</button>
+  </div>
+
+  <!-- ESCENA DEL ÁLBUM 3D -->
+  <div class="book-stage">
+    <div class="book-wrapper" id="album-book">
+
+      <!-- PORTADA DE PASTA DURA INTERACTIVA -->
+      <div class="book-cover" id="cover">
+        <div class="cover-border-frame"></div>
+        <div class="wax-seal" style="top: 30px; right: 30px;">❤️</div>
+
+        <div class="text-center px-4" style="z-index: 10;">
+          <p class="font-['Cinzel'] text-xs tracking-[4px] text-[#dfb368] uppercase mb-2">Libro de Memorias</p>
+          <h1 class="font-['Alex_Brush'] text-5xl md:text-7xl text-white drop-shadow-[0_4px_12px_rgba(230,57,86,0.8)] mb-4">
+            Nuestra Historia de Amor
+          </h1>
+          <p class="font-['Cormorant_Garamond'] italic text-lg text-amber-200/80 max-w-md mx-auto">
+            "Cada página guarda un pedacito de nuestro universo juntos."
+          </p>
+        </div>
+
+        <!-- LISTÓN/SOLAPA LATERAL PARA ABRIR -->
+        <div class="cover-ribbon" onclick="toggleCover()">
+          <span class="cover-ribbon-text">ABRIR</span>
+          <span style="color: #f7e1ad; font-size: 1.2rem;">➔</span>
+        </div>
+      </div>
+
+      <!-- ESPIRAL LATERAL METALICO -->
+      <div class="album-spine">
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+        <div class="spine-ring"></div>
+      </div>
+
+      <!-- ÁREA DE HOJAS DEL ÁLBUM -->
+      <div class="album-pages-area">
+
+        <!-- PESTAÑAS LATERALES -->
+        <div class="side-tabs">
+          <div class="tab-btn active" onclick="goToPage(1)" title="Tiempo & Razones">⏱️</div>
+          <div class="tab-btn" onclick="goToPage(2)" title="Historia & Carta">📖</div>
+          <div class="tab-btn" onclick="goToPage(3)" title="Te Amo en Idiomas">🌍</div>
+          <div class="tab-btn" onclick="goToPage(4)" title="Música & Galería">🎵</div>
+          <div class="tab-btn" onclick="goToPage(5)" title="Sorpresa & Mensajes">🔒</div>
+        </div>
+
+        <!-- ================= PÁGINA 1: NUESTRO TIEMPO Y RAZONES ================= -->
+        <div class="scrapbook-page active" id="page-1">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="font-['Cinzel'] text-xl text-[#dfb368] font-bold tracking-wider">⏱️ Tiempo Juntos & Razones</h2>
+            <span class="font-['Special_Elite'] text-xs text-rose-300/60">Pág. 01</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Contador Cristal -->
+            <div class="glass-card text-center relative overflow-hidden">
+              <div class="washi-tape" style="top: -10px; left: 20px; width: 70px; --rot: -4deg;"></div>
+              <p class="font-['Cinzel'] text-xs uppercase text-amber-200/70 tracking-widest mb-3">Llevamos Juntos</p>
+              
+              <div class="grid grid-cols-4 gap-2 my-2">
+                <div class="bg-black/40 p-2 rounded-lg border border-amber-500/20">
+                  <span id="cnt-days" class="font-['Special_Elite'] text-2xl text-[#dfb368] font-bold">0</span>
+                  <p class="text-[10px] uppercase text-gray-400">Días</p>
+                </div>
+                <div class="bg-black/40 p-2 rounded-lg border border-amber-500/20">
+                  <span id="cnt-hours" class="font-['Special_Elite'] text-2xl text-[#dfb368] font-bold">0</span>
+                  <p class="text-[10px] uppercase text-gray-400">Horas</p>
+                </div>
+                <div class="bg-black/40 p-2 rounded-lg border border-amber-500/20">
+                  <span id="cnt-mins" class="font-['Special_Elite'] text-2xl text-[#dfb368] font-bold">0</span>
+                  <p class="text-[10px] uppercase text-gray-400">Min</p>
+                </div>
+                <div class="bg-black/40 p-2 rounded-lg border border-amber-500/20">
+                  <span id="cnt-secs" class="font-['Special_Elite'] text-2xl text-[#dfb368] font-bold">0</span>
+                  <p class="text-[10px] uppercase text-gray-400">Seg</p>
+                </div>
+              </div>
+              <p class="font-['Caveat'] text-lg text-rose-300 mt-2">Desde el 5 de Julio de 2026 ❤️</p>
+            </div>
+
+            <!-- Frasco de Razones -->
+            <div class="glass-card flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-['Cinzel'] text-xs text-amber-200">🫙 Frasco de las Razones</span>
+                  <select id="reason-dropdown" onchange="selectReason(this.value)" class="bg-black/60 text-xs text-amber-200 border border-amber-500/30 rounded px-2 py-1">
+                    <option value="">Explorar razones...</option>
+                  </select>
+                </div>
+                <div id="reason-display" class="font-['Caveat'] text-xl text-amber-100 min-h-[90px] flex items-center justify-center text-center p-3 my-2 bg-black/20 rounded-lg border border-dashed border-rose-500/30">
+                  "Toca el botón o explora la lista para sacar un papelito del frasco..."
+                </div>
+              </div>
+              <button onclick="drawRandomReason()" class="w-full bg-gradient-to-r from-rose-600 to-rose-800 text-white font-bold py-2 rounded-lg text-sm shadow-lg hover:brightness-110 transition">
+                Sacar una Razón Aleatoria ✨
+              </button>
+            </div>
+          </div>
+
+          <!-- Acordeón La Promesa -->
+          <div class="mt-6 glass-card">
+            <button onclick="togglePromise()" class="w-full flex justify-between items-center text-left font-['Cinzel'] text-sm text-[#dfb368]">
+              <span>💌 Una Pequeña Promesa Para Ti...</span>
+              <span id="promise-arrow">▼</span>
+            </button>
+            <div id="promise-content" class="hidden mt-3 pt-3 border-t border-amber-500/20 font-['Caveat'] text-lg text-amber-100/90 leading-relaxed">
+              Prometo cuidar siempre de ti, escucharte en tus días difíciles, celebrar cada uno de tus logros y recordarte diariamente lo extremadamente valiosa y hermosa que eres para mi vida. 💕
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= PÁGINA 2: NUESTRA HISTORIA Y CARTA ================= -->
+        <div class="scrapbook-page" id="page-2">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="font-['Cinzel'] text-xl text-[#dfb368] font-bold tracking-wider">📖 Historia & Carta Romántica</h2>
+            <span class="font-['Special_Elite'] text-xs text-rose-300/60">Pág. 02</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Capítulos de la Historia -->
+            <div class="glass-card">
+              <div class="flex items-center justify-between mb-3 border-b border-amber-500/20 pb-2">
+                <span id="chap-title" class="font-['Cinzel'] text-sm text-rose-300 font-bold">Capítulo 1: El Comienzo</span>
+                <div class="flex gap-1">
+                  <button onclick="changeChapter(-1)" class="w-7 h-7 bg-black/40 text-amber-200 rounded border border-amber-500/30">❮</button>
+                  <button onclick="changeChapter(1)" class="w-7 h-7 bg-black/40 text-amber-200 rounded border border-amber-500/30">❯</button>
+                </div>
+              </div>
+              <p id="chap-text" class="font-['Cormorant_Garamond'] text-lg text-amber-100/90 leading-relaxed min-h-[160px]">
+                Todo comenzó de la manera más inesperada. Desde nuestra primera conversación supe que había algo completamente diferente en ti, una luz única que cambió mi mundo.
+              </p>
+            </div>
+
+            <!-- Carta Pergamino -->
+            <div class="relative">
+              <div class="washi-tape" style="top: -12px; right: 20px; width: 80px; --rot: 3deg;"></div>
+              <div class="parchment-paper">
+                <h3 class="font-['Alex_Brush'] text-3xl text-rose-800 text-center mb-3">Para la chica más increíble...</h3>
+                <p class="mb-3">
+                  Hola mi amor, te escribo estas palabras para que queden guardadas por siempre en este rinconcito nuestro. Gracias por llenar mis días de sonrisas, por tu paciencia infinita y por la magia de tu amor.
+                </p>
+                <p class="mb-3">
+                  No importa la distancia o los obstáculos, estar a tu lado es la mejor decisión de mi vida.
+                </p>
+                <div class="text-right font-['Alex_Brush'] text-2xl text-rose-800 font-bold mt-4">
+                  Por siempre tuyo ❤️
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= PÁGINA 3: CORAZÓN TE AMO Y PERDÓN ================= -->
+        <div class="scrapbook-page" id="page-3">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="font-['Cinzel'] text-xl text-[#dfb368] font-bold tracking-wider">🌍 "Te Amo" en Todos los Idiomas</h2>
+            <span class="font-['Special_Elite'] text-xs text-rose-300/60">Pág. 03</span>
+          </div>
+
+          <div class="glass-card mb-2 py-2 text-center border-rose-500/30 bg-rose-950/20">
+            <span id="lang-active-text" class="font-['Caveat'] text-2xl md:text-3xl text-rose-300 font-bold block">Te amo</span>
+            <span id="lang-active-name" class="font-['Cinzel'] text-xs text-amber-200/80 tracking-widest uppercase">Español</span>
+          </div>
+
+          <!-- Corazón Paramétrico de Idiomas -->
+          <div class="heart-cloud" id="heart-nodes-container"></div>
+
+          <!-- Panel ¿Me perdonas? -->
+          <div class="glass-card text-center mt-2 relative overflow-hidden">
+            <p id="forgive-msg" class="font-['Caveat'] text-lg text-amber-100 mb-2">
+              Si en algún momento me equivoco, recuerda cuánto te amo... ¿Me perdonas? 🥺
+            </p>
+            <div class="flex justify-center gap-4" id="forgive-btn-wrap">
+              <button onclick="acceptForgive()" class="bg-emerald-600 text-white font-bold px-5 py-1.5 rounded-full text-sm shadow-md hover:bg-emerald-500">Sí ❤️</button>
+              <button id="btn-forgive-no" onclick="denyForgive()" class="bg-rose-600 text-white font-bold px-5 py-1.5 rounded-full text-sm shadow-md">No 🥺</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= PÁGINA 4: MÚSICA Y GALERÍA ================= -->
+        <div class="scrapbook-page" id="page-4">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="font-['Cinzel'] text-xl text-[#dfb368] font-bold tracking-wider">🎵 Canciones & Galería Polaroid</h2>
+            <span class="font-['Special_Elite'] text-xs text-rose-300/60">Pág. 04</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Reproductor de Cassette / Spotify -->
+            <div>
+              <div class="cassette-box flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="cassette-wheel"></div>
+                  <div>
+                    <span class="font-['Special_Elite'] text-sm text-amber-200 block">Nuestra Canción 🎵</span>
+                    <span class="text-xs text-gray-400">Playlist Compartida Spotify</span>
+                  </div>
+                </div>
+                <a href="https://open.spotify.com/playlist/5akUexkTi7W9oWOBWxTsim" target="_blank" class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-full font-bold shadow hover:bg-emerald-500">
+                  Abrir 🎧
+                </a>
+              </div>
+
+              <label class="block glass-card text-center cursor-pointer border-dashed border-amber-500/40 hover:border-amber-400">
+                <input type="file" accept="image/*" class="hidden" onchange="uploadUserPhoto(event)">
+                <span class="font-['Cinzel'] text-xs text-amber-200">📷 Subir nueva foto al álbum</span>
+              </label>
+            </div>
+
+            <!-- Galería Polaroid -->
+            <div id="polaroid-grid" class="grid grid-cols-2 gap-4">
+              <div class="polaroid-card" style="--rot: -3deg;" onclick="openPreview('https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80', 'Nuestra Primera Cita ❤️')">
+                <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80" class="polaroid-img" alt="Polaroid">
+                <p class="polaroid-caption">Primera Cita ❤️</p>
+              </div>
+
+              <div class="polaroid-card" style="--rot: 2deg;" onclick="openPreview('https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=600&q=80', 'Momentos Juntos 💕')">
+                <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=600&q=80" class="polaroid-img" alt="Polaroid">
+                <p class="polaroid-caption">Momentos 💕</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= PÁGINA 5: PREGUNTA ESPECIAL & SECRETO ================= -->
+        <div class="scrapbook-page" id="page-5">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="font-['Cinzel'] text-xl text-[#dfb368] font-bold tracking-wider">🔒 Pregunta Especial & Secreto</h2>
+            <span class="font-['Special_Elite'] text-xs text-rose-300/60">Pág. 05</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Dinámica ¿Me amas? -->
+            <div class="glass-card text-center p-6 flex flex-col justify-center items-center min-h-[220px] relative">
+              <h3 id="love-title" class="font-['Alex_Brush'] text-4xl text-rose-300 mb-6">¿Me amas muchísimo? ❤️</h3>
+              <div class="flex gap-4 justify-center items-center relative w-full h-16">
+                <button onclick="answerLoveYes()" class="bg-gradient-to-r from-rose-500 to-rose-700 text-white font-bold px-6 py-2 rounded-full shadow-lg hover:scale-105 transition">
+                  ¡Sí, con el alma! 😍
+                </button>
+                <button id="btn-love-no" onmouseover="dodgeNoButton()" onclick="dodgeNoButton()" class="bg-gray-700 text-gray-300 font-bold px-6 py-2 rounded-full absolute shadow">
+                  No 😜
+                </button>
+              </div>
+            </div>
+
+            <!-- Panel Secreto con Contraseña -->
+            <div class="glass-card text-center flex flex-col justify-between">
+              <div>
+                <span class="text-3xl block mb-2">🗝️</span>
+                <h4 class="font-['Cinzel'] text-sm text-amber-200 mb-2">Sección Secreta</h4>
+                <p class="text-xs text-gray-300 mb-4">Ingresa la fecha especial (DDMM) para desbloquear la sorpresa final.</p>
+                <input type="password" id="secret-pass" maxlength="4" placeholder="••••" class="bg-black/60 text-center text-amber-200 text-xl tracking-[6px] border border-amber-500/30 rounded-lg py-2 w-32 mx-auto block mb-3">
+              </div>
+              <button onclick="unlockSecret()" class="w-full bg-amber-600/80 hover:bg-amber-600 text-white font-bold py-2 rounded-lg text-xs tracking-wider uppercase transition">
+                Desbloquear 🔓
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- VISOR MODAL DE FOTOS -->
+  <div class="modal-backdrop" id="modal-view" onclick="closeModal()">
+    <div class="bg-[#faf6ee] p-4 rounded-lg max-w-md w-full text-center shadow-2xl relative" onclick="event.stopPropagation()">
+      <img id="modal-img" src="" class="w-full aspect-4/3 object-cover rounded mb-3" alt="Preview">
+      <p id="modal-caption" class="font-['Caveat'] text-2xl text-rose-900 font-bold"></p>
+    </div>
+  </div>
+
+  <script>
+    // --- LÓGICA DE APERTURA Y NAVEGACIÓN 3D ---
+    let isCoverOpen = false;
+    let currentPage = 1;
+
+    function toggleCover() {
+      const cover = document.getElementById("cover");
+      isCoverOpen = !isCoverOpen;
+      if (isCoverOpen) {
+        cover.classList.add("opened");
+      } else {
+        cover.classList.remove("opened");
+      }
+    }
+
+    function goToPage(pageNum) {
+      if (!isCoverOpen) {
+        toggleCover();
+      }
+      currentPage = pageNum;
+      document.querySelectorAll(".scrapbook-page").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(t => t.classList.remove("active"));
+      
+      document.getElementById(`page-${pageNum}`).classList.add("active");
+      document.querySelectorAll(".tab-btn")[pageNum - 1].classList.add("active");
+    }
+
+    // --- CONTADOR DE TIEMPO ---
+    const startDate = new Date('2026-07-05T00:00:00');
+    function updateCounter() {
+      const now = new Date();
+      const diff = now - startDate;
+      
+      if (diff > 0) {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const mins = Math.floor((diff / (1000 * 60)) % 60);
+        const secs = Math.floor((diff / 1000) % 60);
+
+        document.getElementById('cnt-days').innerText = days;
+        document.getElementById('cnt-hours').innerText = hours;
+        document.getElementById('cnt-mins').innerText = mins;
+        document.getElementById('cnt-secs').innerText = secs;
+      }
+    }
+    setInterval(updateCounter, 1000);
+
+    // --- FRASCO DE RAZONES ---
+    const reasons = [
+      "Tu sonrisa ilumina incluso los días más oscuros.",
+      "La forma única en que te ríes de mis chistes malos.",
+      "Cómo me apoyas incondicionalmente en cada proyecto.",
+      "Tu amabilidad y el gran corazón que tienes.",
+      "La manera dulce en que me miras cuando crees que no me doy cuenta.",
+      "Porque a tu lado me siento en paz y seguro.",
+      "Por todas las aventuras que hemos vivido y las que faltan.",
+      "Tus abrazos cálidos que arreglan cualquier mal día."
+    ];
+
+    function initReasons() {
+      const dropdown = document.getElementById("reason-dropdown");
+      if (!dropdown) return;
+      reasons.forEach((r, idx) => {
+        const opt = document.createElement("option");
+        opt.value = idx;
+        opt.innerText = `Razón #${idx + 1}`;
+        dropdown.appendChild(opt);
+      });
+    }
+
+    function drawRandomReason() {
+      const idx = Math.floor(Math.random() * reasons.length);
+      document.getElementById("reason-display").innerText = `"${reasons[idx]}"`;
+    }
+
+    function selectReason(val) {
+      if (val !== "") {
+        document.getElementById("reason-display").innerText = `"${reasons[val]}"`;
+      }
+    }
+
+    function togglePromise() {
+      const content = document.getElementById("promise-content");
+      const arrow = document.getElementById("promise-arrow");
+      if (content.classList.contains("hidden")) {
+        content.classList.remove("hidden");
+        arrow.innerText = "▲";
+      } else {
+        content.classList.add("hidden");
+        arrow.innerText = "▼";
+      }
+    }
+
+    // --- CAPÍTULOS DE HISTORIA ---
+    const chapters = [
+      {
+        title: "Capítulo 1: El Comienzo",
+        text: "Todo comenzó de la manera más inesperada. Desde nuestra primera conversación supe que había algo completamente diferente en ti, una luz única que cambió mi mundo."
+      },
+      {
+        title: "Capítulo 2: Nuestro Primer Encuentro",
+        text: "Ese día los nervios me ganaban, pero en el momento en que te vi llegar con tu hermosa sonrisa, todo cobró sentido. Fue el inicio de nuestra gran historia."
+      },
+      {
+        title: "Capítulo 3: Momentos Inolvidables",
+        text: "Entre risas, paseos, llamadas interminables y complicidad, fuimos construyendo un vínculo indestructible. Cada día a tu lado es una nueva lección de amor."
+      },
+      {
+        title: "Capítulo 4: Hacia el Futuro",
+        text: "Miro hacia adelante y me emociona saber que nos quedan infinitas páginas por escribir juntos, superando cualquier reto y soñando en grande."
+      }
+    ];
+    let currentChapter = 0;
+
+    function changeChapter(dir) {
+      currentChapter = (currentChapter + dir + chapters.length) % chapters.length;
+      document.getElementById("chap-title").innerText = chapters[currentChapter].title;
+      document.getElementById("chap-text").innerText = chapters[currentChapter].text;
+    }
+
+    // --- PARTICULAS DE FONDO Y DESTELLOS (CANVAS) ---
+    const canvas = document.getElementById("particles-canvas");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+    let particlesActive = true;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + 20;
+        this.size = Math.random() * 12 + 6;
+        this.speedY = Math.random() * 1.5 + 0.5;
+        this.speedX = Math.random() * 0.6 - 0.3;
+        this.opacity = Math.random() * 0.7 + 0.3;
+        this.isHeart = Math.random() > 0.4;
+      }
+      update() {
+        this.y -= this.speedY;
+        this.x += this.speedX;
+        if (this.y < -20) this.reset();
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        if (this.isHeart) {
+          ctx.fillStyle = "#e63956";
+          ctx.font = `${this.size}px serif`;
+          ctx.fillText("❤️", this.x, this.y);
+        } else {
+          ctx.fillStyle = "#f7e1ad";
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size / 3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < 35; i++) {
+      particles.push(new Particle());
+    }
+
+    function animateParticles() {
+      if (particlesActive) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
+      }
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    function toggleParticles() {
+      particlesActive = !particlesActive;
+      if (!particlesActive) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    // --- CORAZÓN MULTILINGÜE ---
+    const translations = [
+      { text: "Te amo", lang: "Español" },
+      { text: "I love you", lang: "Inglés" },
+      { text: "Je t'aime", lang: "Francés" },
+      { text: "Ich liebe dich", lang: "Alemán" },
+      { text: "Ti amo", lang: "Italiano" },
+      { text: "Eu te amo", lang: "Portugués" },
+      { text: "Seni seviyorum", lang: "Turco" },
+      { text: "Я тебя люблю", lang: "Ruso" },
+      { text: "사랑해", lang: "Coreano" },
+      { text: "愛してる", lang: "Japonés" },
+      { text: "我爱你", lang: "Chino Mandarín" },
+      { text: "Ik hou van jou", lang: "Holandés" },
+      { text: "S'agapo", lang: "Griego" },
+      { text: "Kocham cię", lang: "Polaco" },
+      { text: "Szeretlek", lang: "Húngaro" },
+      { text: "Te iubesc", lang: "Rumano" },
+      { text: "Jeg elsker deg", lang: "Noruego" },
+      { text: "Jeg elsker dig", lang: "Danés" },
+      { text: "Jag älskar dig", lang: "Sueco" },
+      { text: "Minä rakastan sinua", lang: "Finlandés" },
+      { text: "Miluji tě", lang: "Checo" },
+      { text: "Ľúbim ťa", lang: "Eslovaco" },
+      { text: "Obicham te", lang: "Búlgaro" },
+      { text: "Volim te", lang: "Croata / Servio" },
+      { text: "T'estimo", lang: "Catalán" },
+      { text: "Maite zaitut", lang: "Euskera" },
+      { text: "Ámote", lang: "Gallego" },
+      { text: "Inhobbok", lang: "Maltés" },
+      { text: "Mahal kita", lang: "Filipino / Tagalo" },
+      { text: "Aku cinta kamu", lang: "Indonesio" },
+      { text: "Saya cintakan mu", lang: "Malayo" },
+      { text: "Tôi yêu bạn", lang: "Vietnamita" },
+      { text: "Chan rak theu", lang: "Tailandés" },
+      { text: "Ani ohev otach", lang: "Hebreo" },
+      { text: "Ana uhibbuka", lang: "Árabe" },
+      { text: "Doset daram", lang: "Persa" },
+      { text: "Nakupenda", lang: "Suajili" },
+      { text: "Ke a go rata", lang: "Setsuana" },
+      { text: "Ndikutsandza", lang: "Suazi" },
+      { text: "Ngo niyena", lang: "Cantonés" },
+      { text: "Njan ninne premikkunnu", lang: "Malayalam" },
+      { text: "Naan unnai kadhalikiren", lang: "Tamil" },
+      { text: "Nenu ninnu premistunnanu", lang: "Telugu" },
+      { text: "Main tumse pyar karta hoon", lang: "Hindi" },
+      { text: "Ami tomake bhalobashi", lang: "Bengalí" },
+      { text: "Mahi taenu pyar karda", lang: "Punyabí" },
+      { text: "T'amo", lang: "Napolitano" },
+      { text: "T'estimu", lang: "Sardo" },
+      { text: "Eg elski teg", lang: "Faroés" },
+      { text: "Ég elska þig", lang: "Islandés" },
+      { text: "M'bi fe", lang: "Bambara" },
+      { text: "Mo ni fe re", lang: "Yoruba" },
+      { text: "Ina son ki", lang: "Hausa" },
+      { text: "Mena t'anda", lang: "Papiamento" },
+      { text: "Mi ta stima bo", lang: "Curaçao" },
+      { text: "Palō'ing te", lang: "Hawaiano" },
+      { text: "Ofelafela", lang: "Samoano" },
+      { text: "Guinaani", lang: "Zapoteco" },
+      { text: "Ni mitsuani", lang: "Náhuatl" },
+      { text: "Inak'achakuq", lang: "Quechua" },
+      { text: "Rohayhu", lang: "Guaraní" },
+      { text: "K'ahóolal", lang: "Maya" },
+      { text: "Aroha atu", lang: "Maorí" },
+      { text: "Wo ai ni", lang: "Pinyin" },
+      { text: "S'agapo poli", lang: "Griego Moderno" },
+      { text: "Ea suani", lang: "Mixteco" },
+      { text: "Aishiteru", lang: "Rōmaji" },
+      { text: "Saranghae", lang: "Coreano Románico" },
+      { text: "Ya tebya lyublyu", lang: "Ruso Románico" },
+      { text: "Ti amo tanto", lang: "Italiano Suave" },
+      { text: "Eu te amo tanto", lang: "Portugués Cálido" },
+      { text: "Te amo con el alma", lang: "Español Romántico" },
+      { text: "Forever yours", lang: "Inglés Poético" },
+      { text: "Mon amour", lang: "Francés Cariño" },
+      { text: "Mein Schatz", lang: "Alemán Cariño" },
+      { text: "Mijn liefste", lang: "Holandés Cariño" },
+      { text: "Min älskling", lang: "Sueco Cariño" },
+      { text: "Kulla im", lang: "Albanés" },
+      { text: "M'agapas", lang: "Griego Íntimo" },
+      { text: "Ahavat olam", lang: "Hebreo Profundo" },
+      { text: "Habibi", lang: "Árabe Cariño" },
+      { text: "Janem", lang: "Turco Cariño" },
+      { text: "Suki desu", lang: "Japonés Íntimo" },
+      { text: "Bebito", lang: "Español Tierno" },
+      { text: "My heart", lang: "Inglés Dulce" }
+    ];
+
+    function renderHeartNodes() {
+      const container = document.getElementById("heart-nodes-container");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const total = translations.length;
+      const isMobile = window.innerWidth < 640;
+      
+      const rings = [
+        { count: 32, scaleX: isMobile ? 12.5 : 17.5, scaleY: isMobile ? 12.5 : 17.5 },
+        { count: 26, scaleX: isMobile ? 9.5 : 13.5, scaleY: isMobile ? 9.5 : 13.5 },
+        { count: 18, scaleX: isMobile ? 6.5 : 9.0,  scaleY: isMobile ? 6.5 : 9.0 },
+        { count: 10, scaleX: isMobile ? 3.5 : 5.0,  scaleY: isMobile ? 3.5 : 5.0 }
+      ];
+
+      let itemIndex = 0;
+
+      rings.forEach((ring) => {
+        for (let i = 0; i < ring.count && itemIndex < total; i++) {
+          const item = translations[itemIndex];
+          const t = (i / ring.count) * Math.PI * 2;
+
+          const rawX = 16 * Math.pow(Math.sin(t), 3);
+          const rawY = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+
+          const x = rawX * ring.scaleX;
+          const y = rawY * ring.scaleY;
+
+          const node = document.createElement("div");
+          node.className = "lang-heart-node";
+          node.innerText = item.text;
+          node.style.left = `calc(50% + ${x.toFixed(1)}px)`;
+          node.style.top = `calc(50% + ${y.toFixed(1)}px)`;
+
+          node.onmouseenter = node.onclick = () => {
+            document.querySelectorAll(".lang-heart-node").forEach(n => n.classList.remove("selected"));
+            node.classList.add("selected");
+            document.getElementById("lang-active-text").innerText = item.text;
+            document.getElementById("lang-active-name").innerText = item.lang;
+          };
+
+          container.appendChild(node);
+          itemIndex++;
+        }
+      });
+    }
+
+    window.addEventListener("resize", renderHeartNodes);
+
+    // --- LÓGICA PERDÓN ---
+    function acceptForgive() {
+      document.getElementById("forgive-msg").innerText = "¡Gracias mi amor! Prometo hacerte muy feliz siempre ❤️";
+      document.getElementById("forgive-btn-wrap").innerHTML = `<span class="text-emerald-400 font-bold text-sm">❤️ Te amo demasiado</span>`;
+    }
+
+    let forgiveDenyCount = 0;
+    function denyForgive() {
+      forgiveDenyCount++;
+      const btn = document.getElementById("btn-forgive-no");
+      if (btn) {
+        btn.style.transform = `scale(${Math.max(0.2, 1 - forgiveDenyCount * 0.2)})`;
+      }
+      document.getElementById("forgive-msg").innerText = "¡Ándale, perdóname porfis! 🥺❤️";
+    }
+
+    // --- FOTOS POLAROID & VISOR ---
+    function openPreview(src, caption) {
+      document.getElementById("modal-img").src = src;
+      document.getElementById("modal-caption").innerText = caption;
+      document.getElementById("modal-view").classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("modal-view").classList.remove("active");
+    }
+
+    function uploadUserPhoto(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const grid = document.getElementById("polaroid-grid");
+          const card = document.createElement("div");
+          card.className = "polaroid-card";
+          card.style.setProperty("--rot", `${(Math.random() * 6 - 3).toFixed(1)}deg`);
+          card.onclick = () => openPreview(evt.target.result, 'Recuerdo Especial ❤️');
+
+          card.innerHTML = `
+            <img src="${evt.target.result}" class="polaroid-img" alt="Foto">
+            <p class="polaroid-caption">Nuevo Recuerdo ❤️</p>
+          `;
+          grid.appendChild(card);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // --- BOTÓN HUIDIZO & SECRETO ---
+    function dodgeNoButton() {
+      const btn = document.getElementById("btn-love-no");
+      const randomX = (Math.random() - 0.5) * 160;
+      const randomY = (Math.random() - 0.5) * 80;
+      btn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+    }
+
+    function answerLoveYes() {
+      document.getElementById("love-title").innerText = "¡Sabía que me amabas! Yo a ti muchísimo más 🥰❤️";
+      document.getElementById("btn-love-no").style.display = "none";
+    }
+
+    function unlockSecret() {
+      const pass = document.getElementById("secret-pass").value;
+      if (pass === "0507" || pass === "1234") {
+        alert("🎉 ¡Sección Desbloqueada! Mensaje Secreto: 'Eres el regalo más bonito que la vida me ha dado. Te amo por siempre.'");
+      } else {
+        alert("🔒 Contraseña incorrecta. Pista: Es la fecha especial de nuestro aniversario (0507).");
+      }
+    }
+
+    // --- AUDIO DE FONDO ---
+    let audioPlaying = false;
+    function toggleAudio() {
+      audioPlaying = !audioPlaying;
+      alert(audioPlaying ? "🎵 Reproduciendo música de fondo romántica..." : "🔇 Música en pausa.");
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      renderHeartNodes();
+      initReasons();
+      updateCounter();
+    });
+  </script>
+</body>
+</html>
